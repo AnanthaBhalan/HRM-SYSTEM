@@ -5,22 +5,34 @@ import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/layout/data-table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/components/auth-provider";
 import { createLeaveRequest, getMyDashboardData, type LeaveRequestRow } from "@/lib/hrms-data";
 
 export default function EmployeeLeavePage() {
   const { user } = useAuth();
   const [leave, setLeave] = useState<LeaveRequestRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ leaveType: "paid", startDate: "", endDate: "", reason: "" });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const load = async () => {
     if (!user?.id) return;
-    const result = await getMyDashboardData(user.id);
-    setLeave(result.leave);
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getMyDashboardData(user.id);
+      setLeave(result.leave);
+    } catch (err) {
+      setError("Failed to load leave requests. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -52,11 +64,16 @@ export default function EmployeeLeavePage() {
     setSubmitting(false);
   };
 
+  const getStatusBadge = (status: string) => {
+    const variant = status === "approved" ? "success" : status === "rejected" ? "danger" : status === "pending" ? "warning" : "secondary";
+    return <Badge variant={variant}>{status}</Badge>;
+  };
+
   const rows = leave.map((item) => ({
     Type: item.leave_type,
     Dates: `${item.start_date} - ${item.end_date}`,
     Reason: item.reason ?? "—",
-    Status: item.status,
+    Status: getStatusBadge(item.status),
   }));
 
   return (
@@ -91,7 +108,16 @@ export default function EmployeeLeavePage() {
           </form>
         </CardContent>
       </Card>
-      <DataTable title="Leave requests" columns={["Type", "Dates", "Reason", "Status"]} rows={rows} emptyMessage="No leave requests yet." />
+      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <DataTable title="Leave requests" columns={["Type", "Dates", "Reason", "Status"]} rows={rows} emptyMessage="No leave requests yet." />
+      )}
     </AppShell>
   );
 }

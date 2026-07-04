@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table";
+import { EmptyState } from "@/components/layout/empty-state";
 
 export function DataTable({
   title,
@@ -29,8 +30,8 @@ export function DataTable({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-6 text-center text-sm text-slate-500">
-                  {emptyMessage}
+                <TableCell colSpan={columns.length} className="p-0">
+                  <EmptyState title="No records found" description={emptyMessage} />
                 </TableCell>
               </TableRow>
             ) : (

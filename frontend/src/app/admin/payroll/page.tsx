@@ -4,15 +4,27 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/layout/data-table";
+import { Button } from "@/components/ui/button";
 import { GeneratePayrollDialog } from "@/components/layout/generate-payroll-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getAdminPayroll, type PayrollRow } from "@/lib/hrms-data";
 
 export default function AdminPayrollPage() {
   const [payroll, setPayroll] = useState<PayrollRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
-    const { data } = await getAdminPayroll();
-    setPayroll(data ?? []);
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await getAdminPayroll();
+      setPayroll(data ?? []);
+    } catch (err) {
+      setError("Failed to load payroll data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -33,7 +45,16 @@ export default function AdminPayrollPage() {
         description="Process payroll and review compensation entries."
         action={<GeneratePayrollDialog onSuccess={load} />}
       />
-      <DataTable title="Payroll batches" columns={["Employee", "Period", "Net pay", "Action"]} rows={rows} />
+      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <DataTable title="Payroll batches" columns={["Employee", "Period", "Net pay", "Action"]} rows={rows} />
+      )}
     </AppShell>
   );
 }

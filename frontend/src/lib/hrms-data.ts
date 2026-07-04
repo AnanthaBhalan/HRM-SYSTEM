@@ -237,3 +237,29 @@ export async function createEmployee(input: { fullName: string; email: string; p
 
   return { error: null };
 }
+
+export async function uploadProfilePicture(userId: string, file: File) {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}-${Date.now()}.${fileExt}`;
+  const filePath = `profile-pictures/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('documents')
+    .upload(filePath, file);
+
+  if (uploadError) {
+    return { error: uploadError };
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('documents')
+    .getPublicUrl(filePath);
+
+  const { error: updateError } = await updateMyProfile(userId, { profile_picture_url: publicUrl });
+
+  if (updateError) {
+    return { error: updateError };
+  }
+
+  return { error: null, publicUrl };
+}

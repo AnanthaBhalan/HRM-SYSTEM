@@ -2,7 +2,7 @@
 -- HRMS Seed Data
 -- ============================================================
 -- Run this after schema.sql and policies.sql.
--- Creates 1 admin_hr + 2 employee users with email/password auth,
+-- Creates 1 admin_hr + 5 employee users with email/password auth,
 -- plus sample attendance, leave, and payroll data.
 -- ============================================================
 
@@ -11,35 +11,56 @@
 -- ------------------------------------------------------------
 delete from public.payroll_records where employee_id in (
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from public.leave_requests where employee_id in (
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from public.attendance_records where employee_id in (
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from public.employees where id in (
   '11111111-1111-1111-1111-111111111111',
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from public.profiles where id in (
   '11111111-1111-1111-1111-111111111111',
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from auth.identities where user_id in (
   '11111111-1111-1111-1111-111111111111',
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 delete from auth.users where id in (
   '11111111-1111-1111-1111-111111111111',
   '22222222-2222-2222-2222-222222222222',
-  '33333333-3333-3333-3333-333333333333'
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
 );
 
 -- ------------------------------------------------------------
@@ -84,6 +105,39 @@ insert into auth.users (
   '{"provider":"email","providers":["email"]}',
   '{"full_name":"Bob Employee"}',
   now(), now(), '', '', '', ''
+),
+(
+  '00000000-0000-0000-0000-000000000000',
+  '44444444-4444-4444-4444-444444444444',
+  'authenticated', 'authenticated',
+  'carol.employee@hrms.test',
+  crypt('Password123!', gen_salt('bf')),
+  now(), now(), now(),
+  '{"provider":"email","providers":["email"]}',
+  '{"full_name":"Carol Employee"}',
+  now(), now(), '', '', '', ''
+),
+(
+  '00000000-0000-0000-0000-000000000000',
+  '55555555-5555-5555-5555-555555555555',
+  'authenticated', 'authenticated',
+  'david.employee@hrms.test',
+  crypt('Password123!', gen_salt('bf')),
+  now(), now(), now(),
+  '{"provider":"email","providers":["email"]}',
+  '{"full_name":"David Employee"}',
+  now(), now(), '', '', '', ''
+),
+(
+  '00000000-0000-0000-0000-000000000000',
+  '66666666-6666-6666-6666-666666666666',
+  'authenticated', 'authenticated',
+  'emma.employee@hrms.test',
+  crypt('Password123!', gen_salt('bf')),
+  now(), now(), now(),
+  '{"provider":"email","providers":["email"]}',
+  '{"full_name":"Emma Employee"}',
+  now(), now(), '', '', '', ''
 )
 on conflict (id) do nothing;
 
@@ -113,6 +167,27 @@ insert into auth.identities (
   '33333333-3333-3333-3333-333333333333',
   '33333333-3333-3333-3333-333333333333',
   '{"sub":"33333333-3333-3333-3333-333333333333","email":"bob.employee@hrms.test"}',
+  'email', now(), now(), now()
+),
+(
+  gen_random_uuid(),
+  '44444444-4444-4444-4444-444444444444',
+  '44444444-4444-4444-4444-444444444444',
+  '{"sub":"44444444-4444-4444-4444-444444444444","email":"carol.employee@hrms.test"}',
+  'email', now(), now(), now()
+),
+(
+  gen_random_uuid(),
+  '55555555-5555-5555-5555-555555555555',
+  '55555555-5555-5555-5555-555555555555',
+  '{"sub":"55555555-5555-5555-5555-555555555555","email":"david.employee@hrms.test"}',
+  'email', now(), now(), now()
+),
+(
+  gen_random_uuid(),
+  '66666666-6666-6666-6666-666666666666',
+  '66666666-6666-6666-6666-666666666666',
+  '{"sub":"66666666-6666-6666-6666-666666666666","email":"emma.employee@hrms.test"}',
   'email', now(), now(), now()
 )
 on conflict (provider_id, provider) do nothing;
@@ -145,6 +220,30 @@ values
   'employee',
   '+91-9000000003',
   '45 Park Street, Kolkata'
+),
+(
+  '44444444-4444-4444-4444-444444444444',
+  'carol.employee@hrms.test',
+  'Carol Employee',
+  'employee',
+  '+91-9000000004',
+  '78 Marine Drive, Mumbai'
+),
+(
+  '55555555-5555-5555-5555-555555555555',
+  'david.employee@hrms.test',
+  'David Employee',
+  'employee',
+  '+91-9000000005',
+  '23 Connaught Place, Delhi'
+),
+(
+  '66666666-6666-6666-6666-666666666666',
+  'emma.employee@hrms.test',
+  'Emma Employee',
+  'employee',
+  '+91-9000000006',
+  '56 Brigade Road, Bengaluru'
 )
 on conflict (id) do update set
   email = excluded.email,
@@ -174,6 +273,21 @@ insert into public.employees (
   '33333333-3333-3333-3333-333333333333',
   'EMP-0003', 'Engineering', 'QA Engineer', '2023-06-01',
   'active', 60000, '11111111-1111-1111-1111-111111111111'
+),
+(
+  '44444444-4444-4444-4444-444444444444',
+  'EMP-0004', 'Marketing', 'Marketing Specialist', '2023-08-15',
+  'active', 55000, '11111111-1111-1111-1111-111111111111'
+),
+(
+  '55555555-5555-5555-5555-555555555555',
+  'EMP-0005', 'Sales', 'Sales Executive', '2023-09-01',
+  'active', 50000, '11111111-1111-1111-1111-111111111111'
+),
+(
+  '66666666-6666-6666-6666-666666666666',
+  'EMP-0006', 'Engineering', 'DevOps Engineer', '2023-10-10',
+  'active', 75000, '11111111-1111-1111-1111-111111111111'
 )
 on conflict (id) do update set
   employee_code = excluded.employee_code,
@@ -219,6 +333,81 @@ insert into public.attendance_records (
   '33333333-3333-3333-3333-333333333333', current_date,
   current_date + time '09:05', null,
   'present', 'Present today'
+),
+(
+  '44444444-4444-4444-4444-444444444444', current_date - 4,
+  (current_date - 4) + time '09:15', (current_date - 4) + time '18:30',
+  'present', 'Regular day'
+),
+(
+  '44444444-4444-4444-4444-444444444444', current_date - 3,
+  (current_date - 3) + time '09:00', (current_date - 3) + time '17:45',
+  'present', 'On time'
+),
+(
+  '44444444-4444-4444-4444-444444444444', current_date - 2,
+  null, null,
+  'absent', 'Sick leave'
+),
+(
+  '44444444-4444-4444-4444-444444444444', current_date - 1,
+  (current_date - 1) + time '09:30', (current_date - 1) + time '14:00',
+  'half_day', 'Personal work'
+),
+(
+  '44444444-4444-4444-4444-444444444444', current_date,
+  current_date + time '09:10', null,
+  'present', 'Present today'
+),
+(
+  '55555555-5555-5555-5555-555555555555', current_date - 3,
+  (current_date - 3) + time '08:45', (current_date - 3) + time '18:00',
+  'present', 'Early bird'
+),
+(
+  '55555555-5555-5555-5555-555555555555', current_date - 2,
+  (current_date - 2) + time '09:20', (current_date - 2) + time '19:00',
+  'present', 'Late finish'
+),
+(
+  '55555555-5555-5555-5555-555555555555', current_date - 1,
+  (current_date - 1) + time '09:00', (current_date - 1) + time '17:30',
+  'present', 'Regular day'
+),
+(
+  '55555555-5555-5555-5555-555555555555', current_date,
+  current_date + time '09:05', null,
+  'present', 'Present today'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date - 5,
+  (current_date - 5) + time '09:00', (current_date - 5) + time '17:00',
+  'present', 'Regular day'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date - 4,
+  (current_date - 4) + time '09:10', (current_date - 4) + time '17:50',
+  'present', 'Regular day'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date - 3,
+  null, null,
+  'leave', 'Approved leave'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date - 2,
+  (current_date - 2) + time '09:00', (current_date - 2) + time '18:00',
+  'present', 'Back from leave'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date - 1,
+  (current_date - 1) + time '08:55', (current_date - 1) + time '17:30',
+  'present', 'Regular day'
+),
+(
+  '66666666-6666-6666-6666-666666666666', current_date,
+  current_date + time '09:00', null,
+  'present', 'Present today'
 )
 on conflict (employee_id, date) do nothing;
 
@@ -243,6 +432,36 @@ insert into public.leave_requests (
   '33333333-3333-3333-3333-333333333333', 'unpaid',
   current_date + 20, current_date + 21, 'Personal trip', 'rejected',
   '11111111-1111-1111-1111-111111111111', now() - interval '1 day'
+),
+(
+  '44444444-4444-4444-4444-444444444444', 'paid',
+  current_date + 5, current_date + 7, 'Family vacation', 'pending',
+  null, null
+),
+(
+  '44444444-4444-4444-4444-444444444444', 'sick',
+  current_date - 15, current_date - 14, 'Medical appointment', 'approved',
+  '11111111-1111-1111-1111-111111111111', now() - interval '10 days'
+),
+(
+  '55555555-5555-5555-5555-555555555555', 'paid',
+  current_date + 10, current_date + 12, 'Wedding attendance', 'pending',
+  null, null
+),
+(
+  '55555555-5555-5555-5555-555555555555', 'unpaid',
+  current_date - 20, current_date - 19, 'Personal emergency', 'approved',
+  '11111111-1111-1111-1111-111111111111', now() - interval '15 days'
+),
+(
+  '66666666-6666-6666-6666-666666666666', 'sick',
+  current_date + 15, current_date + 16, 'Dental checkup', 'pending',
+  null, null
+),
+(
+  '66666666-6666-6666-6666-666666666666', 'paid',
+  current_date - 8, current_date - 6, 'Family function', 'approved',
+  '11111111-1111-1111-1111-111111111111', now() - interval '5 days'
 );
 
 -- ------------------------------------------------------------
@@ -264,6 +483,27 @@ insert into public.payroll_records (
   date_trunc('month', current_date - interval '1 month')::date,
   (date_trunc('month', current_date) - interval '1 day')::date,
   60000, 3000, 1500,
+  '11111111-1111-1111-1111-111111111111'
+),
+(
+  '44444444-4444-4444-4444-444444444444',
+  date_trunc('month', current_date - interval '1 month')::date,
+  (date_trunc('month', current_date) - interval '1 day')::date,
+  55000, 2500, 1200,
+  '11111111-1111-1111-1111-111111111111'
+),
+(
+  '55555555-5555-5555-5555-555555555555',
+  date_trunc('month', current_date - interval '1 month')::date,
+  (date_trunc('month', current_date) - interval '1 day')::date,
+  50000, 2000, 1000,
+  '11111111-1111-1111-1111-111111111111'
+),
+(
+  '66666666-6666-6666-6666-666666666666',
+  date_trunc('month', current_date - interval '1 month')::date,
+  (date_trunc('month', current_date) - interval '1 day')::date,
+  75000, 4000, 2000,
   '11111111-1111-1111-1111-111111111111'
 );
 

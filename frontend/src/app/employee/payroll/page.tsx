@@ -4,18 +4,22 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/layout/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/components/auth-provider";
 import { getMyDashboardData, type PayrollRow } from "@/lib/hrms-data";
 
 export default function EmployeePayrollPage() {
   const { user } = useAuth();
   const [payroll, setPayroll] = useState<PayrollRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.id) return;
     const load = async () => {
+      setLoading(true);
       const result = await getMyDashboardData(user.id);
       setPayroll(result.payroll);
+      setLoading(false);
     };
     void load();
   }, [user?.id]);
@@ -30,7 +34,15 @@ export default function EmployeePayrollPage() {
   return (
     <AppShell role="employee">
       <PageHeader title="Payroll" description="View payslips and salary history." />
-      <DataTable title="Payroll history" columns={["Period", "Net pay", "Status", "Notes"]} rows={rows} />
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <DataTable title="Payroll history" columns={["Period", "Net pay", "Status", "Notes"]} rows={rows} />
+      )}
     </AppShell>
   );
 }

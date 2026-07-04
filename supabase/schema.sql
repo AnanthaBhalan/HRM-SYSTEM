@@ -269,3 +269,45 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
 after insert on auth.users
 for each row execute function public.handle_new_user();
+
+-- ------------------------------------------------------------
+-- STORAGE BUCKET: documents
+-- ------------------------------------------------------------
+-- Create storage bucket for profile pictures and documents
+insert into storage.buckets (id, name, public)
+values ('documents', 'documents', true)
+on conflict (id) do nothing;
+
+-- Storage policies for documents bucket
+-- Allow authenticated users to upload to profile-pictures folder
+create policy "Authenticated users can upload profile pictures"
+on storage.objects for insert
+to authenticated
+with check (
+  bucket_id = 'documents' 
+  and starts_with(name, 'profile-pictures/')
+);
+
+-- Allow public read access to profile pictures
+create policy "Profile pictures are publicly readable"
+on storage.objects for select
+to public
+using (bucket_id = 'documents' and starts_with(name, 'profile-pictures/'));
+
+-- Allow authenticated users to update profile pictures
+create policy "Authenticated users can update profile pictures"
+on storage.objects for update
+to authenticated
+using (
+  bucket_id = 'documents' 
+  and starts_with(name, 'profile-pictures/')
+);
+
+-- Allow authenticated users to delete profile pictures
+create policy "Authenticated users can delete profile pictures"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'documents' 
+  and starts_with(name, 'profile-pictures/')
+);
