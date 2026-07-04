@@ -34,6 +34,7 @@ on public.profiles for select
 to authenticated
 using (id = auth.uid() or public.is_admin_hr());
 
+<<<<<<< HEAD
 drop policy if exists "profiles_insert_self_or_admin" on public.profiles;
 create policy "profiles_insert_self_or_admin"
 on public.profiles for insert
@@ -42,17 +43,30 @@ with check (id = auth.uid() or public.is_admin_hr());
 
 drop policy if exists "profiles_update_self_or_admin" on public.profiles;
 create policy "profiles_update_self_or_admin"
+=======
+drop policy if exists "profiles_insert_own" on public.profiles;
+create policy "profiles_insert_own"
+on public.profiles for insert
+to authenticated
+with check (id = auth.uid());
+
+drop policy if exists "profiles_update_own_or_admin" on public.profiles;
+create policy "profiles_update_own_or_admin"
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 on public.profiles for update
 to authenticated
 using (id = auth.uid() or public.is_admin_hr())
 with check (id = auth.uid() or public.is_admin_hr());
 
+<<<<<<< HEAD
 drop policy if exists "profiles_delete_admin" on public.profiles;
 create policy "profiles_delete_admin"
 on public.profiles for delete
 to authenticated
 using (public.is_admin_hr());
 
+=======
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 create or replace function public.enforce_profile_update_columns()
 returns trigger as $$
 begin

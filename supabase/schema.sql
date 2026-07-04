@@ -1,7 +1,17 @@
 -- ============================================================
 -- HRMS Supabase Schema
 -- ============================================================
+<<<<<<< HEAD
 -- Lightweight, hackathon-friendly schema for a small HRMS MVP.
+=======
+-- Creates:
+--   - Enum types: app_role, attendance_status, leave_type, leave_status
+--   - Core tables: profiles, employees, attendance_records,
+--     leave_requests, payroll_records, documents
+--   - updated_at triggers
+--   - auth.users -> profiles auto-provisioning trigger
+--
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 -- Run this first in the Supabase SQL editor.
 -- ============================================================
 
@@ -39,6 +49,10 @@ $$ language plpgsql;
 
 -- ------------------------------------------------------------
 -- TABLE: profiles
+<<<<<<< HEAD
+=======
+-- 1:1 with auth.users; profiles.id == auth.users.id.
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 -- ------------------------------------------------------------
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -49,12 +63,19 @@ create table if not exists public.profiles (
   address text,
   profile_picture_url text,
   created_at timestamptz not null default now(),
+<<<<<<< HEAD
   updated_at timestamptz not null default now(),
   constraint chk_profiles_email_not_blank check (btrim(email) <> '')
 );
 
 create index if not exists idx_profiles_role on public.profiles(role);
 create index if not exists idx_profiles_email on public.profiles(email);
+=======
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_profiles_role on public.profiles(role);
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 
 drop trigger if exists set_timestamp_profiles on public.profiles;
 create trigger set_timestamp_profiles
@@ -63,6 +84,11 @@ for each row execute function public.trigger_set_timestamp();
 
 -- ------------------------------------------------------------
 -- TABLE: employees
+<<<<<<< HEAD
+=======
+-- Employment-specific data. employees.id shares the same UUID as
+-- profiles.id and auth.users.id.
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 -- ------------------------------------------------------------
 create table if not exists public.employees (
   id uuid primary key references public.profiles(id) on delete cascade,
@@ -72,15 +98,24 @@ create table if not exists public.employees (
   date_of_joining date not null default current_date,
   employment_status text not null default 'active',
   base_salary numeric(12,2) not null default 0,
+<<<<<<< HEAD
   manager_id uuid references public.employees(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint chk_employee_code_not_blank check (btrim(employee_code) <> '')
+=======
+  manager_id uuid references public.employees(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 );
 
 create index if not exists idx_employees_department on public.employees(department);
 create index if not exists idx_employees_manager on public.employees(manager_id);
+<<<<<<< HEAD
 create index if not exists idx_employees_lookup on public.employees(department, employment_status, designation);
+=======
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 
 drop trigger if exists set_timestamp_employees on public.employees;
 create trigger set_timestamp_employees
@@ -89,6 +124,10 @@ for each row execute function public.trigger_set_timestamp();
 
 -- ------------------------------------------------------------
 -- TABLE: attendance_records
+<<<<<<< HEAD
+=======
+-- One row per employee per day.
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 -- ------------------------------------------------------------
 create table if not exists public.attendance_records (
   id uuid primary key default gen_random_uuid(),
@@ -105,7 +144,10 @@ create table if not exists public.attendance_records (
 
 create index if not exists idx_attendance_employee on public.attendance_records(employee_id);
 create index if not exists idx_attendance_date on public.attendance_records(date);
+<<<<<<< HEAD
 create index if not exists idx_attendance_status_date on public.attendance_records(status, date desc);
+=======
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 
 drop trigger if exists set_timestamp_attendance on public.attendance_records;
 create trigger set_timestamp_attendance
@@ -123,7 +165,11 @@ create table if not exists public.leave_requests (
   end_date date not null,
   reason text,
   status public.leave_status not null default 'pending',
+<<<<<<< HEAD
   reviewed_by uuid references public.profiles(id) on delete set null,
+=======
+  reviewed_by uuid references public.profiles(id),
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
   reviewed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -132,7 +178,10 @@ create table if not exists public.leave_requests (
 
 create index if not exists idx_leave_employee on public.leave_requests(employee_id);
 create index if not exists idx_leave_status on public.leave_requests(status);
+<<<<<<< HEAD
 create index if not exists idx_leave_status_employee on public.leave_requests(status, employee_id);
+=======
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 
 drop trigger if exists set_timestamp_leave on public.leave_requests;
 create trigger set_timestamp_leave
@@ -141,6 +190,10 @@ for each row execute function public.trigger_set_timestamp();
 
 -- ------------------------------------------------------------
 -- TABLE: payroll_records
+<<<<<<< HEAD
+=======
+-- Employees read-only; admin_hr can manage.
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 -- ------------------------------------------------------------
 create table if not exists public.payroll_records (
   id uuid primary key default gen_random_uuid(),
@@ -151,7 +204,11 @@ create table if not exists public.payroll_records (
   allowances numeric(12,2) not null default 0,
   deductions numeric(12,2) not null default 0,
   net_salary numeric(12,2) generated always as (basic_salary + allowances - deductions) stored,
+<<<<<<< HEAD
   generated_by uuid references public.profiles(id) on delete set null,
+=======
+  generated_by uuid references public.profiles(id),
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint chk_payroll_period check (pay_period_end >= pay_period_start)
@@ -159,7 +216,10 @@ create table if not exists public.payroll_records (
 
 create index if not exists idx_payroll_employee on public.payroll_records(employee_id);
 create index if not exists idx_payroll_period on public.payroll_records(pay_period_start, pay_period_end);
+<<<<<<< HEAD
 create index if not exists idx_payroll_employee_period on public.payroll_records(employee_id, pay_period_start desc, pay_period_end desc);
+=======
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
 
 drop trigger if exists set_timestamp_payroll on public.payroll_records;
 create trigger set_timestamp_payroll
@@ -176,7 +236,11 @@ create table if not exists public.documents (
   doc_type text not null default 'other',
   file_name text,
   file_url text not null,
+<<<<<<< HEAD
   uploaded_by uuid references public.profiles(id) on delete set null,
+=======
+  uploaded_by uuid references public.profiles(id),
+>>>>>>> 8822c5223dc205a83ba711d3611314f2c5d29d86
   created_at timestamptz not null default now()
 );
 
